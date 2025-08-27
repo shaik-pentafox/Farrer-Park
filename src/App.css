@@ -1,4 +1,52 @@
-#root {
+/* BackgroundBall.css */
+
+.bg-color {
+  background: aqua;
+}
+
+.bg-layer {
+  position: fixed;
+  inset: -12vmax;           /* extra space so blur isn’t clipped */
+  pointer-events: none;     /* clicks go through */
+  overflow: visible;
+  z-index: 0;               /* not negative: sits above body, below your app */
+}
+
+.background-ball {
+  /* position: fixed; */
+  top: 0;
+  left: 0;
+  width: 400px;           /* size of the ball */
+  height: 400px;
+  background: rgba(0, 120, 255, 0.3); /* semi-transparent blue */
+  border-radius: 50%;     /* makes it a circle */
+  filter: blur(80px);     /* blur effect */
+  z-index: -1;            /* behind everything */
+  animation: floatAround 30s infinite alternate; /* slow animation */
+}
+
+/* animate the ball moving around */
+@keyframes floatAround {
+  0% {
+    transform: translate(0vw, 0vh);
+  }
+  25% {
+    transform: translate(80vw, 20vh);
+  }
+  50% {
+    transform: translate(50vw, 80vh);
+  }
+  75% {
+    transform: translate(10vw, 60vh);
+  }
+  100% {
+    transform: translate(0vw, 0vh);
+  }
+}
+
+
+
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +87,4 @@
 
 .read-the-docs {
   color: #888;
-}
+} */

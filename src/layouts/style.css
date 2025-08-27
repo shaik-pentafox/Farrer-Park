@@ -1,0 +1,19 @@
+.nav-button {
+  width: 100% !important;
+  border: 1px solid red !important;
+  border-radius: 6px !important;
+  /* padding: 6px 7px !important; */
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+
+}
+
+.nav-button:hover {
+  background-color: var(--mantine-color-gray-0);
+  border-color: var(--mantine-color-gray-5);
+}
+
+.nav-button:active {
+  background-color: var(--mantine-color-gray-1);
+  border-color: var(--mantine-color-gray-6);
+}
