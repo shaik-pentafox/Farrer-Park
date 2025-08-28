@@ -8,26 +8,30 @@ import {
   UnstyledButton,
   Tooltip,
   Flex,
-  ActionIcon,
   Image,
-  Button,
+  Card,
+  Menu,
+  ScrollArea,
 } from "@mantine/core";
 import {
+  IconDots,
   IconEdit,
+  IconEye,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarRightCollapse,
-  IconPlus,
   IconSearch,
+  IconTrash,
 } from "@tabler/icons-react";
 import { COLORS } from "../config/Colors";
 import './style.css'
 import { useNavigate } from "react-router-dom";
+import { useChatStore } from "../store/ChatStore";
 
 
 const ListItem = ({ expand, label, onClick, iconComp }) => {
   return (
     <Tooltip hidden={expand} label={label} withArrow position="right" offset={14}>
-     <UnstyledButton onClick={onClick} className="nav-button" p={6} >
+     <UnstyledButton onClick={onClick} className="nav-button" mr={'md'} p={6} >
         <Group justify="flex-start" gap="xs">
           <Flex align="center" direction="row" gap="md">
             {iconComp}
@@ -43,14 +47,8 @@ const ListItem = ({ expand, label, onClick, iconComp }) => {
 
 export const Navigation = ({ expand, onToggle }) => {
   const navigate = useNavigate();
-  const history = [
-    "Jhon doe patient onboard...",
-    "Alex patient onboarding",
-    "Jesse doe patient onboard...",
-    "Saul patient onboarding",
-    "wills doe patient onboard...",
-  ];
-
+  const { getConversationList, deleteConversation } = useChatStore();
+  const conversationList = getConversationList();
   const user = {
     name: "Youssef Bsheer",
     phone: "+201094828532",
@@ -62,17 +60,13 @@ export const Navigation = ({ expand, onToggle }) => {
     color: COLORS.brand[6]
   }
   return (
-    <Box
+    <Flex
       h="100vh"
-      display="flex"
-      style={{
-        flexDirection: "column",
-        justifyContent: "space-between",
-        transition: "width 0.2s ease",
-      }}
+      direction={'column'}
+      justify={'space-between'}
     >
       {/* ---------- Top Section ---------- */}
-      <Stack gap="sm" p="md">
+      <Stack gap="sm" pl="md" pt='md'>
         {/* Logo */}
         <Image
           src={expand ? "/FP-full-logo.png" : "/FP-logo.png"} // full logo when expanded
@@ -117,20 +111,65 @@ export const Navigation = ({ expand, onToggle }) => {
         {/* History items */}
         {expand && (
           <Box>
-            <Text>Chats</Text>
-            <Stack gap="sm" pt="xs" pl="sm" align="flex-start">
-              {history.map((item, i) => (
-                <Text
-                  key={i}
-                  size="sm"
-                  truncate
-                  c="dimmed"
-                  style={{ cursor: "pointer" }}
-                >
-                  {item}
-                </Text>
-              ))}
-            </Stack>
+            <Text c={COLORS.brand[6]}>Chats</Text>
+            <Flex h='50vh'>
+              <ScrollArea w='100%'>
+                <Stack gap={3} py="xs" align="flex-start">
+                  {conversationList.map((i) => (
+                    <Card
+                      radius="md"
+                      w="95%"
+                      p={6}
+                      bg='transparent'
+                      style={{
+                        transition: "background 0.2s, transform 0.2s",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "#a00a2f22"; // light gray bg
+                        e.currentTarget.style.transform = "scale(1.01)"; // subtle lift
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }}
+                    >
+                      <Flex justify="space-between" w="100%">
+                        <Text
+                          key={i.id}
+                          size="sm"
+                          truncate
+                        >
+                          {i.label}
+                        </Text>
+                        <Menu>
+                          <Menu.Target>
+                            <IconDots style={{ cursor: "pointer" }} />
+                          </Menu.Target>
+                          <Menu.Dropdown bg='#ffeff3eb'>
+                            <Menu.Item
+                              onClick={() => navigate("history", { state: i })}
+                              leftSection={<IconEye size={18} />}
+                            >
+                              View
+                            </Menu.Item>
+                            <Menu.Item
+                              color="red"
+                              onClick={() => {
+                                deleteConversation(i.id), navigate("/");
+                              }}
+                              leftSection={<IconTrash size={18} />}
+                            >
+                              Delete
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </Flex>
+                    </Card>
+                  ))}
+                </Stack>
+              </ScrollArea>
+            </Flex>
           </Box>
         )}
       </Stack>
@@ -157,7 +196,7 @@ export const Navigation = ({ expand, onToggle }) => {
           )}
         </Group>
       </Box>
-    </Box>
+    </Flex>
   );
 };
 

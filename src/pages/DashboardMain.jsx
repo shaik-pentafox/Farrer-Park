@@ -27,34 +27,34 @@ export default function DashboardMain() {
 
   const cardData = [
   {
-    title: "Appointment Scheduling & Management",
-    description: "Patients can book, reschedule, or cancel appointments without waiting in line or on hold.",
-    rout: 'appointment'
-  },
-  {
-    title: "Patient Registration & Pre-Check-In",
-    description: "Collects patient details, insurance information, and medical history before arrival.",
-    rout: 'registration'
-  },
-  {
-    title: "Real-Time Information & FAQs",
-    description: "Answers common questions about visiting hours, doctor availability, departments, billing, and insurance coverage.",
-    rout: 'faq'
-  },
-  {
-    title: "Emergency Triage & Routing",
-    description: "Guides patients to the right department based on reported symptoms.",
-    rout: 'faq'
+    title: "Patient Registration & Pre-Admission",
+    description: "Check patient profile, verify pre-admission details, and ensure records are updated before arrival.",
+    rout: "registration",
   },
   {
     title: "Billing & Insurance Assistance",
-    description: "Explains billing breakdowns, accepted insurance plans, and co-payment details.",
-    rout: 'faq'
+    description: "Check patient’s CPF MediShield, Medisave, and insurance coverage details for billing and claims.",
+    rout: "appointment",
   },
   {
-    title: "Medication & Post-Care Support",
-    description: "Provides prescription reminders and dosage instructions.",
-    rout: 'faq'
+    title: "GOP and LOG Assistance",
+    description: "Verify the presented GOP and LOG documents. If not acceptable, provide next steps or escalation path.",
+    rout: "faq",
+  },
+  {
+    title: "Hospital Packages",
+    description: "Review available hospital packages, confirm applicability, and tag the appropriate package for the patient.",
+    rout: "registration",
+  },
+  {
+    title: "Post Discharge Support",
+    description: "Provide patients with their discharge itinerary, schedule follow-ups, and assist with post-discharge reviews.",
+    rout: "appointment",
+  },
+  {
+    title: "General Information",
+    description: "Share general hospital details including visiting hours, transportation contacts, and other useful information.",
+    rout: "faq",
   },
 ];
 
@@ -76,7 +76,7 @@ export default function DashboardMain() {
 
 
   return (
-    <Paper h="100vh" p="md">
+    <Paper h="100vh" py="md">
       <Flex direction="column" justify="flex-end" h="100%" align={"center"}>
         <Flex justify="flex-start" w="60%" my="xl">
           <Image src="/FP-full-logo.png" alt="Logo" h={50} w="auto" />
@@ -128,7 +128,7 @@ export default function DashboardMain() {
         </SimpleGrid>
 
         {/* Input Area */}
-        <Group mt="md" w={"60%"}>
+        <Group mt="md" w={"70%"}>
           <TextInput
             placeholder="Message ..."
             value={input}
