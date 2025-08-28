@@ -11,6 +11,7 @@ export const AppShellLayout = ({ children }) => {
   return (
     <AppShell
       navbar={{ width: desktopOpened ? 270 : 72, breakpoint: "sm" }}
+      color="red"
       style={{
         backgroundImage: `url(${BG})`,
         backgroundSize: "cover",
@@ -19,7 +20,7 @@ export const AppShellLayout = ({ children }) => {
         minHeight: "100vh",
       }}
     >
-      <AppShell.Navbar>
+      <AppShell.Navbar style={{    borderRight: '2px solid #ffff'}}>
         <Navigation expand={desktopOpened} onToggle={toggleDesktop} />
       </AppShell.Navbar>
 

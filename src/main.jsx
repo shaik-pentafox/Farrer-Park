@@ -16,7 +16,7 @@ const theme = createTheme({
     brand: COLORS.brand,
   },
   primaryColor: "brand",
-  focusRing: "never"
+  // focusRing: "never"
 });
 
 createRoot(document.getElementById("root")).render(

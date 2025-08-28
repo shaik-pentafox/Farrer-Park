@@ -10,6 +10,7 @@ import {
   Flex,
   ActionIcon,
   Image,
+  Button,
 } from "@mantine/core";
 import {
   IconEdit,
@@ -26,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 const ListItem = ({ expand, label, onClick, iconComp }) => {
   return (
     <Tooltip hidden={expand} label={label} withArrow position="right" offset={14}>
-     <UnstyledButton onClick={onClick} p={6}>
+     <UnstyledButton onClick={onClick} className="nav-button" p={6} >
         <Group justify="flex-start" gap="xs">
           <Flex align="center" direction="row" gap="md">
             {iconComp}
@@ -67,7 +68,6 @@ export const Navigation = ({ expand, onToggle }) => {
       style={{
         flexDirection: "column",
         justifyContent: "space-between",
-        borderRight: "1px solid var(--mantine-color-gray-3)",
         transition: "width 0.2s ease",
       }}
     >
@@ -78,7 +78,7 @@ export const Navigation = ({ expand, onToggle }) => {
           src={expand ? "/FP-full-logo.png" : "/FP-logo.png"} // full logo when expanded
           alt="Logo"
           style={{
-            width:'auto', // larger when expanded
+            width: "auto", // larger when expanded
             height: 50, // maintain aspect ratio
             margin: "16px auto", // center horizontally
             transition: "all 0.2s ease",
@@ -96,7 +96,6 @@ export const Navigation = ({ expand, onToggle }) => {
             )
           }
           onClick={onToggle}
-          active={false}
         />
 
         {/* New Chat */}
@@ -104,8 +103,7 @@ export const Navigation = ({ expand, onToggle }) => {
           expand={expand}
           label="New Chat"
           iconComp={<IconEdit {...iconProps} />}
-          onClick={()=>navigate('/')}
-          active={false}
+          onClick={() => navigate("/")}
         />
 
         {/* Search History */}
@@ -114,31 +112,39 @@ export const Navigation = ({ expand, onToggle }) => {
           label="Search History"
           iconComp={<IconSearch {...iconProps} />}
           onClick={() => console.log("Search History")}
-          active={true}
         />
 
         {/* History items */}
         {expand && (
-          <Stack gap="sm" pt="xs" pl="sm" align="flex-start">
-            {history.map((item, i) => (
-              <Text
-                key={i}
-                size="sm"
-                truncate
-                c="dimmed"
-                style={{ cursor: "pointer" }}
-              >
-                {item}
-              </Text>
-            ))}
-          </Stack>
+          <Box>
+            <Text>Chats</Text>
+            <Stack gap="sm" pt="xs" pl="sm" align="flex-start">
+              {history.map((item, i) => (
+                <Text
+                  key={i}
+                  size="sm"
+                  truncate
+                  c="dimmed"
+                  style={{ cursor: "pointer" }}
+                >
+                  {item}
+                </Text>
+              ))}
+            </Stack>
+          </Box>
         )}
       </Stack>
 
       {/* ---------- Bottom Profile ---------- */}
-      <Box p="sm" m='md' >
+      <Box p="sm" m="md">
         <Group justify={expand ? "flex-start" : "center"} gap="sm">
-          <Avatar size="md" radius="xl" name={user.name} color={COLORS.brand[6]} variant="outline" />
+          <Avatar
+            size="md"
+            radius="xl"
+            name={user.name}
+            color={COLORS.brand[6]}
+            variant="outline"
+          />
           {expand && (
             <Box>
               <Text size="sm" fw={500}>

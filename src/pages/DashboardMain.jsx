@@ -63,15 +63,7 @@ export default function DashboardMain() {
     if (!input.trim()) return;
 
     setMessages((prev) => [...prev, { sender: "user", text: input }]);
-
-    // Fake bot reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "This is a dummy response 🤖" },
-      ]);
-    }, 800);
-
+    navigate('test',{state: input})
     setInput("");
   };
 

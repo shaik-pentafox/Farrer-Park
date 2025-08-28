@@ -4,6 +4,10 @@
   --mantine-color-text: inherit !important;
 }
 
+*{
+  font-family: "Titillium Web", sans-serif;
+}
+
 
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
