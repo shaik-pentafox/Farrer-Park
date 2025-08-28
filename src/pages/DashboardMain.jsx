@@ -97,9 +97,12 @@ export default function DashboardMain() {
                     ? `1px solid ${COLORS.purple}`
                     : "1px solid #f1f1f1ff",
                 cursor: hovered === idx && "pointer",
-                background: "rgba(255, 255, 255, 0.2)", // translucent white
-                backdropFilter: "blur(1px)", // frosted glass blur
-                WebkitBackdropFilter: "blur(1px)",
+                // background: "rgba(255, 255, 255, 0.2)", // translucent white
+                // backdropFilter: "blur(1px)", // frosted glass blur
+                // WebkitBackdropFilter: "blur(1px)",
+                transition: "all 0.3s ease",
+                transform: hovered === idx ? "translateY(-4px) scale(1.02)" : "none",
+                boxShadow: hovered === idx ? "0 6px 20px rgba(0,0,0,0.15)" : "0 2px 6px rgba(0,0,0,0.05)",
               }}
               onMouseEnter={() => setHovered(idx)}
               onMouseLeave={() => setHovered(null)}
