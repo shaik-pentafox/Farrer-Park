@@ -7,182 +7,249 @@ import {
   Group,
   Flex,
   ScrollArea,
-  RadioCard,
   Radio,
   RadioGroup,
   Loader,
-  Box,
 } from "@mantine/core";
 import { IconArrowUp, IconPencil } from "@tabler/icons-react";
 import { useLocation } from "react-router-dom";
 import { COLORS } from "../config/Colors";
 import { useChatStore } from "../store/ChatStore";
 
-// Patient Registration Flow
-function* patientRegistrationFlow() {
-  yield { text: "Sure. Please provide the patient’s full name." };
-  yield {
-    text: "Got it. Please provide Date of Birth (DOB).",
-    validator: (input) => /^(0[1-9]|[12][0-9]|3[01])[\/\-](0[1-9]|1[0-2])[\/\-]\d{4}$|^\d{4}[\/\-](0[1-9]|1[0-2])[\/\-](0[1-9]|[12][0-9]|3[01])$/.test(input),
-    errorMessage: "⚠️ Please enter a valid DOB (DD/MM/YYYY or YYYY-MM-DD).",
-  };
-  yield { text: "Gender?", options: ["Male", "Female", "Others"] };
-  yield {
-    text: "Please enter contact number.",
-    validator: (input) => /^[6-9]\d{9}$/.test(input),
-    errorMessage: "⚠️ Please enter a valid 10-digit contact number.",
-  };
-  yield {
-    text: "Please provide the patient’s address (House No, Street, City).",
-  };
-  yield { text: "Please provide a valid email address (optional)." };
-  yield {
+// ---------------- FLOWS ----------------
+
+// Patient Registration
+const patientRegistrationFlow = [
+  {
+    text: "Sure. Please provide the patient’s full name.",
+    validator: (input) => /^[A-Za-z]+(\s[A-Za-z]+)*$/.test(input),
+    errorMessage: "⚠️ Please enter a valid full name.",
+  },
+  {
+    text: "Got it. Please provide Date of Birth (DOB) in DD-MM-YYYY format.",
+    validator: (input) =>
+      /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/.test(input),
+    errorMessage: "⚠️ Please enter DOB in DD-MM-YYYY format.",
+  },
+  { text: "Gender?", options: ["Male", "Female", "Others"] },
+  {
+    text: "Please enter contact number (8-digit SG number).",
+    validator: (input) => /^[689]\d{7}$/.test(input),
+    errorMessage: "⚠️ Enter a valid 8-digit Singapore number.",
+  },
+  { text: "Please provide the patient’s address (Block, Street, Unit No., Postal Code)." },
+  // { text: "Please provide a valid email address (optional)." },
+  {
     text: "What is the patient’s marital status?",
     options: ["Single", "Married", "Divorced", "Widowed", "Separated"],
-  };
-  yield {
-    text: "Could you share an emergency contact name and contact number?",
-  };
-  yield {
-    text: "Please provide a government ID ",
-    options: ["Aadhaar", "SSN", "Passport"],
-  };
-  yield { text: "Enter the Id details" };
-  yield { text: "What is the patient’s blood group?" };
-  yield {
-    text: "Does the patient have medical insurance? If yes, please share provider and ID.",
-  };
-  yield {
-    text: "Does the patient have any allergies or major medical history?",
-  };
-}
+  },
+  { text: "Could you share an emergency contact name and number?" },
+  {
+    text: "Please provide a valid ID type.",
+    options: ["NRIC", "FIN", "Passport"],
+  },
+  { text: "Enter the ID number (e.g., S1234567A or F1234567N)." },
+  { text: "What is the patient’s blood group?" },
+  { text: "Does the patient have medical insurance (e.g., MediShield Life, Integrated Shield Plan)?" },
+  { text: "Does the patient have any allergies or medical history?" },
+];
 
-// Appointment Scheduling Flow
-function* appointmentFlow() {
-  yield { text: "Got it. Please provide John’s DOB" };
-  yield {
+// Billing
+const billingInsuranceFlow = [
+  {
+    text: "Sure. Do you want to check MediShield Life, Medisave, or Private Integrated Shield Plan?",
+  },
+  { text: "Please provide patient’s NRIC / FIN number." },
+  {
+    text: "Would you like to check billing breakdown?",
+    options: ["Yes", "No"],
+  },
+  { text: "Would you like to generate an estimated bill summary?" },
+];
+
+// GOP & LOG
+const gopLogFlow = [
+  {
+    text: "Do you have a GOP (Guarantee of Payment) or LOG (Letter of Guarantee)?",
+  },
+  { text: "Please provide the insurance company / employer details." },
+  { text: "Upload or enter GOP/LOG reference number." },
+  {
+    text: "Checking validity… ✅ If not valid, would you like to escalate?",
+    options: ["Escalate to Billing", "Escalate to Insurance", "Cancel"],
+  },
+  { text: "Do you want to notify the patient/family about the next steps?" },
+];
+
+// Hospital Packages
+const hospitalPackagesFlow = [
+  {
+    text: "Are you looking for admission packages, maternity packages, or surgery packages?",
+  },
+  {
+    text: "Please provide patient name and department (e.g., Orthopaedics, Maternity).",
+  },
+  { text: "Here are the applicable packages. Would you like to select one?" },
+  {
+    text: "Do you want to tag this package to the patient’s admission record?",
+  },
+  { text: "Do you need to generate a package cost estimate?" },
+];
+
+// Post Discharge
+const postDischargeFlow = [
+  { text: "Hope you’re recovering well! Can you please confirm the patient’s full name?" },
+  { text: "Please provide the Date of Discharge (DD-MM-YYYY)." },
+  {
+    text: "Would you like to review or update discharge instructions/medications?",
+    options: ["Review", "Update"],
+  },
+  {
+    text: "Do you need to schedule a follow-up consultation?",
+    options: ["Yes", "No"],
+  },
+  {
+    text: "Available follow-up slots with Dr. Lim (Tan Tock Seng Hospital):",
+    options: ["10:30 AM, Sep 2", "2:00 PM, Sep 3", "11:00 AM, Sep 4"],
+  },
+  { text: "Your post-discharge follow-up has been scheduled. Wishing you a smooth recovery!" },
+];
+
+// General Info
+const generalInfoFlow = [
+  { text: "What information are you looking for?" },
+  {
+    text: "Options:",
+    options: [ "Visiting Hours", "Departments & Doctors", "Public Transport Directions", "Hospital Facilities" ],
+  },
+  {
+    text: "Do you need contact details of the hospital helpline or ambulance service (e.g., 995)?",
+  },
+  { text: "Do you want directions to the hospital via Google Maps?" },
+  { text: "Would you like details of nearby 24h pharmacies or lodging facilities (e.g., hostels, hotels)?" },
+];
+
+// Appointment Scheduling
+const appointmentFlow = [
+  { text: "Got it. Please provide the patient’s DOB (DD-MM-YYYY)." },
+  {
     text: "Would you like to use existing details or update insurance/contact info?",
     options: ["Existing", "Update"],
-  };
-  yield { text: "Which department/doctor should I book the appointment for?" };
-  yield {
-    text: "Available slots for Dr. Smith (Cardiology):",
+  },
+  { text: "Which department/doctor should I book the appointment for?" },
+  {
+    text: "Available slots for Dr. Lim (Cardiology at SGH):",
     options: ["10:30 AM, Aug 27", "2:00 PM, Aug 27", "11:00 AM, Aug 28"],
-  };
-  yield { text: "Your appointment is scheduled" };
-}
+  },
+  { text: "Your appointment has been scheduled. See you soon!" },
+];
 
-// General Info / Queries Flow
-function* generalInfoFlow() {
-  yield {
-    text: "Visiting hours today are 10:00 AM – 12:00 PM and 5:00 PM – 7:00 PM.",
-  };
-  yield { text: "A patient wants to know if Dr. Patel is available today." };
-  yield {
-    text: "Checking... ✅ Dr. Patel (Orthopedics) is available today from 2:00 PM – 6:00 PM. Next available slot: 3:30 PM.",
-  };
-  yield { text: "A patient wants to know about insurance coverage." };
-  yield {
-    text: "The hospital accepts BlueCross, Aetna, UnitedHealth, and Medicare. For detailed plan coverage, please check the billing desk or upload insurance card via chatbot link.",
-  };
-  yield { text: "Can you share the OPD fee for general consultation?" };
-  yield {
-    text: "General OPD consultation fee is ₹500. Specialist consultation starts from ₹800.",
-  };
-}
-
-// Dummy
-function* botFlow() {
-  yield { text: "Okay, let’s get started." };
-  // yield {
-  //   text: "Would you like to use existing details or update insurance/contact info?",
-  //   options: ["Existing", "Update"],
-  // };
-  // yield { text: "Which department/doctor should I book the appointment for?" };
-  // yield {
-  //   text: "Available slots for Dr. Smith (Cardiology):",
-  //   options: ["10:30 AM, Aug 27", "2:00 PM, Aug 27", "11:00 AM, Aug 28"],
-  // };
-}
-
-// Fallback
-const FALLBACK_MESSAGE = {
-  text: "Sorry, I can't process that right now. Please try again later.",
-  // options: ["Try now", "Help", "Exit"]
-};
+// ---------------- COMPONENT ----------------
 
 export default function Dashboard() {
   const location = useLocation();
   const path = location.pathname.slice(1);
-  // const [messages, setMessages] = useState([]);
+
   const [label, setLabel] = useState(path);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const { addConversation, addMessage, getConversation, updateLabel } = useChatStore();
+  const { addConversation, addMessage, getConversation, updateLabel } =
+    useChatStore();
+
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
   const labelRef = useRef(null);
-  const botGenRef = useRef(null);
+  const flowRef = useRef(null); // holds { steps, currentStep }
   const effectRan = useRef(false);
 
-  // Initialize conversation in store
   const [conversationId, setConversationId] = useState(null);
-  console.log(conversationId,'-->')
+  const [isEditing, setIsEditing] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
 
+  // ---------------- INIT ----------------
   useEffect(() => {
-    if (effectRan.current) return; // skip if already ran
-    if (path == 'history') {
-      setConversationId(location.state.id)
-      setLabel(location.state.label)
+    if (effectRan.current) return;
+    
+    if (path === "history") {
+      setConversationId(location.state.id);
+      setLabel(location.state.label);
     } else {
-      const convId = addConversation(path); // create new conversation in store
-      console.log(convId)
+      const convId = addConversation(path);
       setConversationId(convId);
-      let initialMsg;
-      if (path === "appointment") {
-        botGenRef.current = appointmentFlow();
-        initialMsg = "Schedule a new appointment for John Doe.";
-      } else if (path === "registration") {
-        botGenRef.current = patientRegistrationFlow();
-        initialMsg = "Register a new patient.";
-      } else if (path === "faq") {
-        botGenRef.current = generalInfoFlow();
-        initialMsg = "What are today's visiting hours?";
-      } else {
-        botGenRef.current = botFlow();
-        initialMsg = location.state;
+
+      let steps = [];
+      let initialMsg = "";
+
+      switch (path) {
+        case "Registration":
+          steps = patientRegistrationFlow;
+          initialMsg = "Register a new patient.";
+          break;
+        case "Billing":
+          steps = billingInsuranceFlow;
+          initialMsg = "Check patient’s billing and insurance details.";
+          break;
+        case "GOP-LOG":
+          steps = gopLogFlow;
+          initialMsg = "Assist with GOP / LOG.";
+          break;
+        case "Packages":
+          steps = hospitalPackagesFlow;
+          initialMsg = "Show hospital packages.";
+          break;
+        case "Post-Discharge":
+          steps = postDischargeFlow;
+          initialMsg = "Post discharge support.";
+          break;
+        case "Info":
+          steps = generalInfoFlow;
+          initialMsg = "General hospital info.";
+          break;
+        case "Appointment":
+          steps = appointmentFlow;
+          initialMsg = "Book an appointment.";
+          break;
+        default:
+          steps = [{ text: "Okay, let’s get started." }];
+          initialMsg = location.state;
       }
-  
-      // ✅ Pass convId explicitly instead of relying on state
+
+      flowRef.current = { steps, currentStep: 0 };
+
+      // send initial message
       handleSend(initialMsg, convId);
     }
+
     effectRan.current = true;
     inputRef.current?.focus();
   }, []);
 
-  const messages = conversationId ? getConversation(conversationId)?.messages || [] : [];
+  const messages = conversationId
+    ? getConversation(conversationId)?.messages || []
+    : [];
+    console.log(conversationId,messages)
 
+  // ---------------- SEND HANDLER ----------------
   const handleSend = (message, overrideConvId) => {
     const cid = overrideConvId ?? conversationId;
-    if (!cid) {
-      console.warn("⚠️ No conversation id yet!");
-      return;
-    }
     const text = message ?? input;
-    console.log(message,conversationId)
     if (!text.trim()) return;
+
     setLoading(true);
     setInput("");
-
-    // add user message to store
     addMessage(cid, { sender: "user", text });
 
-
     setTimeout(() => {
-      // find the last bot question
+      const flow = flowRef.current;
+      console.log(flow,'Flow')
+      if (!flow) {
+        addMessage(cid, { sender: "bot", text: "Sorry, I couldn't process that right now. Please try again in a while. Thank you for your patience!" });
+        setLoading(false);
+        return;
+      }
+
       const lastBotMsg = [...messages].reverse().find((m) => m.sender === "bot");
 
-      // run validation on the last bot step
       if (lastBotMsg && lastBotMsg.validator && !lastBotMsg.validator(text)) {
         addMessage(cid, {
           sender: "bot",
@@ -195,79 +262,99 @@ export default function Dashboard() {
         return; // STOP — don't move to next step
       }
 
-      // ✅ only advance if valid
-      const nextBot = botGenRef.current.next();
-      if (nextBot.done || !nextBot.value) {
-        addMessage(cid, { sender: "bot", text: "Sorry, I can't process that right now. Please try again later." });
-        setLoading(false);
-        return;
+      // advance to next step
+      const currentData = flow.steps[flow.currentStep];
+      
+      if (currentData) {
+        addMessage(cid, {
+          sender: "bot",
+          text: currentData.text,
+          options: currentData.options,
+          validator: currentData.validator,
+          errorMessage: currentData.errorMessage,
+        });
+        flow.currentStep++;
+      } else {
+        addMessage(cid, { sender: "bot", text: "Flow completed!" });
       }
 
-      const step = nextBot.value;
-
-      // Save bot step (including validator + options if present)
-      addMessage(cid, {
-        sender: "bot",
-        text: step.text,
-        options: step.options,
-        validator: step.validator,
-        errorMessage: step.errorMessage,
-      });
-
       setLoading(false);
-    }, 700);
+    }, 600);
   };
 
-  // Auto-scroll to bottom whenever messages change
+  // auto-scroll
   useEffect(() => {
-    if (scrollRef.current) {scrollRef.current.scrollTop = scrollRef.current.scrollHeight}
-    // console.log(messages)
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [messages]);
-  const [isEditing, setIsEditing] = useState(false); 
-  const [showIcon, setShowIcon] = useState(false); 
 
+  // ---------------- UI ----------------
   return (
     <Paper h="100vh" py="md">
       {/* Label */}
-        <Group gap="xs" align="center"  w='100%' h={70} p='md' onMouseEnter={() => setShowIcon(true)}  onMouseLeave={() => setShowIcon(false)} >
-          <Text
-            ref={labelRef} c={COLORS.brand[6]}
-            ta={"start"} fz={30} fw={600}
-            contentEditable={isEditing}
-            suppressContentEditableWarning
-            // onBlur={(e) => {
-            //   setLabel(e.currentTarget.textContent);
-            //   setIsEditing(false);
-            // }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault(); // prevent newline
-                setIsEditing(false);
-                updateLabel(conversationId, e.currentTarget.textContent?.trim() || "");
-              }
+      <Group
+        gap="xs"
+        align="center"
+        w="100%"
+        h={70}
+        p="md"
+        onMouseEnter={() => setShowIcon(true)}
+        onMouseLeave={() => setShowIcon(false)}
+      >
+        <Text
+          ref={labelRef}
+          c={COLORS.brand[6]}
+          ta={"start"}
+          fz={30}
+          fw={600}
+          contentEditable={isEditing}
+          suppressContentEditableWarning
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              setIsEditing(false);
+              updateLabel(
+                conversationId,
+                e.currentTarget.textContent?.trim() || ""
+              );
+            }
+          }}
+          style={{
+            outline: "none",
+            cursor: isEditing ? "text" : "default",
+            borderBottom: isEditing ? "1px dashed gray" : "none",
+          }}
+        >
+          {label}
+        </Text>
+
+        {!isEditing && (
+          <IconPencil
+            color="gray"
+            size={30}
+            onClick={() => {
+              setIsEditing(true);
+              setTimeout(() => labelRef.current?.focus(), 0);
             }}
             style={{
-              outline: "none",
-              cursor: isEditing ? "text" : "default",
-              borderBottom: isEditing ? "1px dashed gray" : "none",
+              opacity: showIcon ? 1 : 0,
+              transition: "opacity 0.2s",
             }}
-          >
-            {label}
-          </Text>
+          />
+        )}
+      </Group>
 
-          {!isEditing && (
-            <IconPencil color="gray" size={30} onClick={() => {setIsEditing(true), setTimeout(() => labelRef.current?.focus(), 0)}}
-              style={{
-                opacity: showIcon ? 1 : 0,
-                transition: "opacity 0.2s",
-              }} 
-            />
-          )}
-        </Group>
-      <Flex direction="column" justify="flex-end" h="calc(100% - 70px)" align={"center"}>
+      {/* Chat + Input */}
+      <Flex
+        direction="column"
+        justify="flex-end"
+        h="calc(100% - 70px)"
+        align="center"
+      >
         {/* Chat Area */}
-        <ScrollArea viewportRef={scrollRef} w={"100%"} >
-          <Flex direction="column" gap="sm" px="16%" py='sm' >
+        <ScrollArea viewportRef={scrollRef} w="100%">
+          <Flex direction="column" gap="sm" px="16%" py="sm">
             {messages.map((msg, idx) => {
               const isLast = idx === messages.length - 1; // ✅ check latest message
               return (
@@ -282,11 +369,14 @@ export default function Dashboard() {
                     style={{ maxWidth: "70%" }}
                   >
                     <Text size="sm">{msg.text}</Text>
+
                     {isLast && msg.options && (
                       <RadioGroup
                         mt="xs"
                         onChange={(val) => {
-                          setInput(val), inputRef.current?.focus();
+                          setInput(val);
+                          // inputRef.current?.focus();
+                          handleSend(val);
                         }}
                       >
                         <Group>
@@ -305,14 +395,13 @@ export default function Dashboard() {
         </ScrollArea>
 
         {/* Input Area */}
-        <Group w={"70%"}>
+        <Group w="70%">
           <TextInput
             placeholder="Message ..."
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            // leftSection={<IconPencil size={20} style={{ marginLeft: 10 }} />}
             rightSection={
               <ActionIcon
                 radius="xl"

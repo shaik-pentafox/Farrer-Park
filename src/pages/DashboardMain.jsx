@@ -26,44 +26,44 @@ export default function DashboardMain() {
   const scrollRef = useRef(null);
 
   const cardData = [
-  {
-    title: "Patient Registration & Pre-Admission",
-    description: "Check patient profile, verify pre-admission details, and ensure records are updated before arrival.",
-    rout: "registration",
-  },
-  {
-    title: "Billing & Insurance Assistance",
-    description: "Check patient’s CPF MediShield, Medisave, and insurance coverage details for billing and claims.",
-    rout: "appointment",
-  },
-  {
-    title: "GOP and LOG Assistance",
-    description: "Verify the presented GOP and LOG documents. If not acceptable, provide next steps or escalation path.",
-    rout: "faq",
-  },
-  {
-    title: "Hospital Packages",
-    description: "Review available hospital packages, confirm applicability, and tag the appropriate package for the patient.",
-    rout: "registration",
-  },
-  {
-    title: "Post Discharge Support",
-    description: "Provide patients with their discharge itinerary, schedule follow-ups, and assist with post-discharge reviews.",
-    rout: "appointment",
-  },
-  {
-    title: "General Information",
-    description: "Share general hospital details including visiting hours, transportation contacts, and other useful information.",
-    rout: "faq",
-  },
-];
+    {
+      title: "Patient Registration & Pre-Admission",
+      description: "Check patient profile, verify pre-admission details, and ensure records are updated before arrival.",
+      rout: "Registration",
+    },
+    {
+      title: "Billing & Insurance Assistance",
+      description: "Check patient’s CPF MediShield, Medisave, and insurance coverage details for billing and claims.",
+      rout: "Billing",
+    },
+    {
+      title: "GOP and LOG Assistance",
+      description: "Verify the presented GOP and LOG documents. If not acceptable, provide next steps or escalation path.",
+      rout: "GOP-LOG",
+    },
+    {
+      title: "Hospital Packages",
+      description: "Review available hospital packages, confirm applicability, and tag the appropriate package for the patient.",
+      rout: "Packages",
+    },
+    {
+      title: "Post Discharge Support",
+      description: "Provide patients with their discharge itinerary, schedule follow-ups, and assist with post-discharge reviews.",
+      rout: "Post-Discharge",
+    },
+    {
+      title: "General Information",
+      description: "Share general hospital details including visiting hours, transportation contacts, and other useful information.",
+      rout: "Info",
+    },
+  ];
 
 
   const handleSend = () => {
     if (!input.trim()) return;
 
     setMessages((prev) => [...prev, { sender: "user", text: input }]);
-    navigate('test',{state: input})
+    navigate('Test',{state: input})
     setInput("");
   };
 

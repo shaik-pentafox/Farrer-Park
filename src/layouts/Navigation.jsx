@@ -135,11 +135,8 @@ export const Navigation = ({ expand, onToggle }) => {
                       }}
                     >
                       <Flex justify="space-between" w="100%">
-                        <Text
-                          key={i.id}
-                          size="sm"
-                          truncate
-                        >
+                        <Text key={i.id} size="sm" truncate >
+                          <Text span c='dimmed'>{i.id} </Text>
                           {i.label}
                         </Text>
                         <Menu>
@@ -148,8 +145,9 @@ export const Navigation = ({ expand, onToggle }) => {
                           </Menu.Target>
                           <Menu.Dropdown bg='#ffeff3eb'>
                             <Menu.Item
-                              onClick={() => navigate("history", { state: i })}
+                              onClick={() => {navigate('/') ,navigate("history", { state: i })}}
                               leftSection={<IconEye size={18} />}
+                              // disabled
                             >
                               View
                             </Menu.Item>

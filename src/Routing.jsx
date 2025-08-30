@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AppShellLayout } from "./layouts/AppShellLayout";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard2";
 import DashboardMain from "./pages/DashboardMain";
 
 export const Routing = () => {
